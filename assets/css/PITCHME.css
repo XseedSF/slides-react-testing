@@ -1,5 +1,19 @@
 .half-col{
 	display: inline-block;
-	width: 45%;
+	width: 44%;
 	margin: 0;
+	margin-left: 3%;
+	margin-right: 3%;
+}
+
+.col-header{
+}
+
+.col-header.react-header{
+	background: #00bcd4;
+	color: #FFF;
+}
+.col-header.js-header{
+	background: #F1DA4E;
+	color: #323232;
 }
