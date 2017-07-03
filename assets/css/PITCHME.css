@@ -1,19 +1,22 @@
-.half-col{
+.reveal div.half-col{
 	display: inline-block;
-	width: 44%;
-	margin: 0;
-	margin-left: 3%;
-	margin-right: 3%;
+	width: 43%;
+	margin: 0 3% 3%;
+	vertical-align: top;
 }
 
-.col-header{
+.reveal div.col-header{
 }
 
-.col-header.react-header{
-	background: #00bcd4;
+.reveal div.col-header.official-header{
+	background: #3b5998;
 	color: #FFF;
 }
-.col-header.js-header{
+.reveal div.col-header.js-header{
 	background: #F1DA4E;
 	color: #323232;
+}
+.reveal div.col-header.react-header{
+	background: #00bcd4;
+	color: #FFF;
 }
