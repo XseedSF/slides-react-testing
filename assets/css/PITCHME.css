@@ -22,10 +22,15 @@
 }
 
 .reveal span.title-jest{
-	color: #99424f;
+	color: #99424f; 
 	font-weight: bold;
 }
 .reveal span.title-enzyme{
 	color: #fd5c63;
 	font-weight: bold;
+}
+
+.reveal span.reserved-word{
+	color: #99424f;
+	font-style: italic;
 }

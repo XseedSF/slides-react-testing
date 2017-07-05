@@ -122,28 +122,27 @@ describe("Testing More Matchers", () => {
 	});
 	it("Testing number", () => {
 		const n = 0.1 + 0.2;
-	  expect(value).toBeGreaterThan(0);
-		expect(value).toBeGreaterThanOrEqual(0);
+	  expect(n).toBeGreaterThan(0);
+		expect(n).toBeGreaterThanOrEqual(0);
 		// Consideration for floating point
-		expect(value).not.toBe(0.3);    // It isn't! Because rounding error
-  	expect(value).toBeCloseTo(0.3); // This works.
+		expect(n).not.toBe(0.3);    // It isn't! Because rounding error
+  	expect(n).toBeCloseTo(0.3); // This works.
 	});
 	// string: toMatch(regex)
 	// array: toContain(element)
+	// func: toBeCalled(), toHaveBeenCalledTimes(num)
 });
 ```
-@[2-9](Distinguish between udefined, null, false if needed)
+@[2-9](Distinguish between udefined, null and false if needed)
 @[10-17](Number ranges)
 @[14-16](Testing floating point)
-@[18-19](Even more matchers! check the API Reference)
+@[18-20](Even more matchers! check the API Reference)
 
 ---
 
 ### SNAPSHOT TESTING
 
-##### INTRODUCTION
-
-Stores an image of an object to compare against it in future tests executions
+Stores an image of an object used to check for differences in future tests executions
 
 If the two images doesn't match the test fails
 
@@ -160,7 +159,7 @@ If the two images doesn't match the test fails
 
 #### WHEN TO USE SNAPSHOTS
 
-- Dont want to manualy update expected value
+- Dont want to manualy write expected value
 - Testing UI and UI changes
 - Testing reducers
 
@@ -296,3 +295,42 @@ exports[`Button Snapshot className button 1`] = `
 ```
 @[1-8](No props assigned, just the children)
 @[10-16](The snapshot adds the className value)
+
++++
+
+### LETS PLAY
+
+commit: 4fdebb2
+
+---
+
+### TESTING FUNCTIONS
+##### TEST EVENTS AND COMPONENT LOGIC USING MOCKS AND SPYES
+
++++
+
+#### MOCKS AND SPYES
+
+- Replace an actual implementation of a function 
+- Captures calls to a function (and parameters passed)
+- Captures instances when <span class="reserved-word">new</span> or <span class="reserved-word">bind</span> is used
+- Allow us to change the return of the function
+
++++
+
+__/Button/test.js__
+```javascript
+it('Event onClick called only once', ()=>{
+		const onClick = jest.fn();
+
+		const component = renderer.create(<Button onClick={onClick}>Click me</Button>);
+		const tree = component.toJSON();
+
+		expect(onClick).not.toBeCalled();
+		tree.props.onClick();
+		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+```
+@[2](Mock function that is going to record every interaction)
+@[7](The function hasn't been called yet)
+@[8-9](Execute the function and expect it to have been called only 1 time)
