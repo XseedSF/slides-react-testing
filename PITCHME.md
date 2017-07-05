@@ -18,6 +18,7 @@
 		<div class="col-header official-header">Pros</div>
 		- Fastest option <br/>
 		- Integral solution (almost) <br/>
+		- Supports snapshot testing <br/>
 		- Supported by Facebook 
 	</div>
 	<div class="half-col">
@@ -37,15 +38,18 @@ describe('Component', () => {
 	});
 })
 ```
-@[1,6](describe)
-@[2,5](test)
-@[4](expects)
+@[1,6](describe test set)
+@[2,3-5](individual test to perform)
+@[4](assertion, checks if the test is correct)
 
 ---
 
 ### LETS TESTS SOMETHING
+
+__/Add/index.js__
 ```javascript
 const Add = (x, y) => x + y;
+export default Add;
 ```
 <div class="fragment">
 	- Adds two numbers correctly [2+3 = 5] <br/>
@@ -55,7 +59,9 @@ const Add = (x, y) => x + y;
 
 +++
 
+__/Add/test.js__
 ```javascript
+import Add from '.';
 describe("Add", () => {
 	// 2+3 = 5
 	it("Adds two numbers correctly", () => {
@@ -71,9 +77,9 @@ describe("Add", () => {
 	});
 });
 ```
-@[2-5](Add)
-@[6-9](Commutative)
-@[10-13](Distributive)
+@[3-6](Correctly adds two numbers)
+@[7-10](Commutative)
+@[11-14](Distributive)
 
 ---
 
@@ -98,9 +104,9 @@ describe("Testing Matchers", () => {
 	});
 });
 ```
-@[2-4](Uses === to test exact equality)
-@[5-9](Recusively checks every field of an object)
-@[10-12](Opposite of a matcher)
+@[2-4](toBe: uses === to test exact equality)
+@[5-9](toEquals: recursively checks every field of an object)
+@[10-12](not: opposite of a matcher)
 
 +++
 
@@ -133,9 +139,12 @@ describe("Testing More Matchers", () => {
 
 ---
 
-### Snapshot testing
+### SNAPSHOT TESTING
 
-Stores an image of an object to compare against in future tests executions
+##### INTRODUCTION
+
+Stores an image of an object to compare against it in future tests executions
+
 If the two images doesn't match the test fails
 
 +++
@@ -144,12 +153,20 @@ If the two images doesn't match the test fails
 - Compares it to the stored image
 - If test fails
   - Show differences between images
-  - If unexpected chages: Change code and retest
+  - If unexpected chages: Change code and test again
   - If expected changes: Update the stored image
 
 +++
 
-If we dont whant to write the expected result
+#### WHEN TO USE SNAPSHOTS
+
+- Dont want to manualy update expected value
+- Testing UI and UI changes
+- Testing reducers
+
++++
+
+Remember this test
 
 ```javascript
 describe("Add", () => {
@@ -173,6 +190,7 @@ describe("Add", () => {
 
 +++
 
+__/Add/test.js__
 ```javascript
 describe("Add", () => {
 	// 2+3 = snap
@@ -182,7 +200,99 @@ describe("Add", () => {
 });
 ```
 
-\_\_snapshots\_\_/test.js.snap
+__/Add/\_\_snapshots\_\_/test.js.snap__
 ```
 exports[`Add Adds two numbers correctly 1`] = `5`;
 ```
+
+--- 
+
+### SNAPSHOT TESTING
+
+##### TESTING COMPONENTS
+
++++
+
+__/Button/index.js__
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const Button = ({ onClick,  className, children }) => {
+  return (
+    <button 
+    onClick={onClick}
+    className={className}
+    type='button' >
+    {children}
+    </button>
+    );
+}
+
+Button.propTypes = {
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired
+}
+
+Button.defaultProps = {
+  className: ''
+}
+
+export default Button
+```
+
++++
+
+__/Button/test.js__
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import renderer from 'react-test-renderer';
+import Button from '.';
+
+describe("Button", () => {
+	it("Renders", () => {
+		const div = document.createElement('div');
+	  ReactDOM.render(<Button>Button</Button>, div);
+	});
+
+	it('Snapshot click me button', () => {
+		const component = renderer.create(<Button>Click me</Button>);
+		const tree = component.toJSON();
+		expect(tree).toMatchSnapshot();
+	});
+	it('Snapshot className button', () => {
+		const tree = renderer.create(<Button className="awesome-btn">Click me</Button>).toJSON();
+		expect(tree).toMatchSnapshot();
+	});
+});
+```
+@[7-10](Render component)
+@[12-16](Snapshot testing)
+@[12-16](Snapshot testing prop className)
+
++++
+
+__/Button/\_\_snapshots\_\_/test.js.snap__
+```
+exports[`Button Snapshot click me button 1`] = `
+<button
+  className=""
+  onClick={undefined}
+  type="button">
+  Click me
+</button>
+`;
+
+exports[`Button Snapshot className button 1`] = `
+<button
+  className="awesome-btn"
+  onClick={undefined}
+  type="button">
+  Click me
+</button>
+`;
+```
+@[1-8](No props assigned, just the children)
+@[10-16](The snapshot adds the className value)
