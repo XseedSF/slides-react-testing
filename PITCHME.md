@@ -16,8 +16,9 @@
 <div>
 	<div class="half-col" >
 		<div class="col-header official-header">Pros</div>
-		- Fastest Option<br/>
-		- Backup by Facebook
+		- Fastest option <br/>
+		- Integral solution (almost) <br/>
+		- Supported by Facebook 
 	</div>
 	<div class="half-col">
 		<div class="col-header js-header">Cons</div>
@@ -57,7 +58,7 @@ const Add = (x, y) => x + y;
 ```javascript
 describe("Add", () => {
 	// 2+3 = 5
-	it("Adds to numbers correctly", () => {
+	it("Adds two numbers correctly", () => {
 		expect(Add(2, 3)).toBe(5);
 	});
 	// 2+3 = 3+2
@@ -129,3 +130,59 @@ describe("Testing More Matchers", () => {
 @[10-17](Number ranges)
 @[14-16](Testing floating point)
 @[18-19](Even more matchers! check the API Reference)
+
+---
+
+### Snapshot testing
+
+Stores an image of an object to compare against in future tests executions
+If the two images doesn't match the test fails
+
++++
+
+- Makes an image of the object
+- Compares it to the stored image
+- If test fails
+  - Show differences between images
+  - If unexpected chages: Change code and retest
+  - If expected changes: Update the stored image
+
++++
+
+If we dont whant to write the expected result
+
+```javascript
+describe("Add", () => {
+	// 2+3 = 5
+	it("Adds two numbers correctly", () => {
+		expect(Add(2, 3)).toBe(5);
+	});
+});
+```
+
+We can do something like this
+
+```javascript
+describe("Add", () => {
+	// 2+3 = snap
+	it("Adds two numbers correctly", () => {
+		expect(Add(2, 3)).toMatchSnapshot();
+	});
+});
+```
+
++++
+
+```javascript
+describe("Add", () => {
+	// 2+3 = snap
+	it("Adds two numbers correctly", () => {
+		expect(Add(2, 3)).toMatchSnapshot();
+	});
+});
+```
+
+\_\_snapshots\_\_/test.js.snap
+```
+exports[`Add Adds two numbers correctly 1`] = `5`;
+```
