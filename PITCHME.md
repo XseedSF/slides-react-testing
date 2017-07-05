@@ -1,19 +1,22 @@
 ---
-# TESTING REACT APPS
-### AN INTRODUCTION TO <span class="title-jest">JEST</span> AND <span class="title-enzyme">ENZYME</span>
+
+## TESTING REACT APPS
+#### AN INTRODUCTION TO <span class="title-jest">JEST</span> AND <span class="title-enzyme">ENZYME</span>
 
 ---
+
 ### WHY TEST
 - Find and prevent errors
 - Executable documentation
 - Fixing bugs for ever
 
 ---
+
 ### JEST
 <div>
 	<div class="half-col" >
 		<div class="col-header official-header">Pros</div>
-		- Fastest Option
+		- Fastest Option<br/>
 		- Backup by Facebook
 	</div>
 	<div class="half-col">
@@ -23,7 +26,8 @@
 </div>
 
 ---
-## TEST STRUCTURE
+
+### TEST STRUCTURE
 ```javascript
 describe('Component', () => {
 	// alias for test(name, fn)
@@ -32,22 +36,24 @@ describe('Component', () => {
 	});
 })
 ```
-@[1,7](describe)
-@[3,6](test)
-@[4-5](expects)
+@[1,6](describe)
+@[2,5](test)
+@[4](expects)
 
 ---
-## LETS TESTS SOMETHING
+
+### LETS TESTS SOMETHING
 ```javascript
 const Add = (x, y) => x + y;
 ```
 <div class="fragment">
-	- Adds two numbers correctly [2+3 = 5]
-	- Commutative property [2+3 = 3+2]
+	- Adds two numbers correctly [2+3 = 5] <br/>
+	- Commutative property [2+3 = 3+2] <br/>
 	- Distributive property [1+(2+3) = (1+2)+3]
 </div>
 
 +++
+
 ```javascript
 describe("Add", () => {
 	// 2+3 = 5
@@ -69,4 +75,57 @@ describe("Add", () => {
 @[10-13](Distributive)
 
 ---
-### THE EXPECT OBJECT
+
+### Matchers
+
+The expectation object exposes **Matchers** that let you validate if the test is doing what we expected
+
++++
+
+```javascript
+describe("Testing Matchers", () => {
+	it("Exact equality", () => {
+		expect(2 + 3).toBe(5);
+	});
+	it("Object equality", () => {
+		const obj = { a: 1 };
+		obj['b'] = 2;
+		expect(obj).toEqual({ a: 1, b: 2 });
+	});
+	it("Testing the opposite of a matcher", () => {
+		expect(2 + 3).not.toBe(0);
+	});
+});
+```
+@[2-4](Uses === to test exact equality)
+@[5-9](Recusively checks every field of an object)
+@[10-12](Opposite of a matcher)
+
++++
+
+```javascript
+describe("Testing More Matchers", () => {
+	it("Testing truthiness", () => {
+		const n = null;
+	  expect(n).toBeNull();
+	  expect(n).toBeDefined();
+	  expect(n).not.toBeUndefined();
+	  expect(n).not.toBeTruthy();
+	  expect(n).toBeFalsy();
+	});
+	it("Testing number", () => {
+		const n = 0.1 + 0.2;
+	  expect(value).toBeGreaterThan(0);
+		expect(value).toBeGreaterThanOrEqual(0);
+		// Consideration for floating point
+		expect(value).not.toBe(0.3);    // It isn't! Because rounding error
+  	expect(value).toBeCloseTo(0.3); // This works.
+	});
+	// string: toMatch(regex)
+	// array: toContain(element)
+});
+```
+@[2-9](Distinguish between udefined, null, false if needed)
+@[10-17](Number ranges)
+@[14-16](Testing floating point)
+@[18-19](Even more matchers! check the API Reference)
