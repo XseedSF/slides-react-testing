@@ -1,11 +1,13 @@
 ---
 
 ## TESTING REACT APPS
+
 #### AN INTRODUCTION TO <span class="title-jest">JEST</span> AND <span class="title-enzyme">ENZYME</span>
 
 ---
 
 ### WHY TEST
+
 - Find and prevent errors
 - Executable documentation
 - Fixing bugs for ever
@@ -13,21 +15,15 @@
 ---
 
 ### JEST
-<div>
-	<div class="half-col" >
-		<div class="col-header official-header">Pros</div>
-		- Fastest option <br/>
-		- Integral solution (almost) <br/>
-		- Supports snapshot testing <br/>
-		- Supported by Facebook 
-	</div>
-	<div class="half-col">
-		<div class="col-header js-header">Cons</div>
-		- Lack of documentation
-	</div>
-</div>
 
----
+- GOOD
+	- Fastest option
+	- Test only what changes
+	- Supports snapshot testing
+	- Integral solution ¯\\_(ツ)_/¯
+	- Supported by Facebook 
+-BAD
+	- Lack of documentation
 
 ### TEST STRUCTURE
 ```javascript
@@ -105,14 +101,14 @@ describe("Testing Matchers", () => {
 });
 ```
 @[2-4](toBe: uses === to test exact equality)
-@[5-9](toEquals: recursively checks every field of an object)
+@[5-9](toEqual: recursively checks every field of an object)
 @[10-12](not: opposite of a matcher)
 
 +++
 
 ```javascript
 describe("Testing More Matchers", () => {
-	it("Testing truthiness", () => {
+	it("Testing truthfulness", () => {
 		const n = null;
 	  expect(n).toBeNull();
 	  expect(n).toBeDefined();
@@ -152,14 +148,14 @@ If the two images doesn't match the test fails
 - Compares it to the stored image
 - If test fails
   - Show differences between images
-  - If unexpected chages: Change code and test again
+  - If unexpected changes: Change code and test again
   - If expected changes: Update the stored image
 
 +++
 
 #### WHEN TO USE SNAPSHOTS
 
-- Dont want to manualy write expected value
+- Don't want to manually write expected value
 - Testing UI and UI changes
 - Testing reducers
 
@@ -294,7 +290,7 @@ exports[`Button Snapshot className button 1`] = `
 `;
 ```
 @[1-8](No props assigned, just the children)
-@[10-16](The snapshot adds the className value)
+@[10-17](The snapshot adds the className value)
 
 +++
 
@@ -334,3 +330,176 @@ it('Event onClick called only once', ()=>{
 @[2](Mock function that is going to record every interaction)
 @[7](The function hasn't been called yet)
 @[8-9](Execute the function and expect it to have been called only 1 time)
+
++++
+
+```javascript
+it('Event onClick called only once', ()=>{
+		const onClick = jest.fn();
+
+		const component = renderer.create(<Button onClick={onClick}>Click me</Button>);
+		const tree = component.toJSON();
+
+		expect(onClick).not.toBeCalled();
+		tree.props.onClick();
+		tree.props.onClick('awesome-param');
+		expect(onClick).toHaveBeenCalledTimes(2);
+		expect(onClick.mock.calls).toEqual([ [], ['awesome-param'] ]);
+	});
+```
+@[8-11](we can get the parameters)
+
+---
+
+### EVERITHING SEEMS FINE
+
++++
+
+```javascript
+class Search extends Component {
+
+  componentDidMount() {
+    this.input.focus();
+  }
+
+  render() {
+    const { value, onChange, onSubmit, children } = this.props;
+    return (
+      <form onSubmit={onSubmit}>
+        <input  type='text'
+                value={value}
+                onChange={onChange}
+                ref={(node) => { this.input = node; }} />
+        <button type='submit'>
+          {children}  
+        </button>
+      </form>
+    );
+  }
+}
+
+Search.propTypes = {
+  value: PropTypes.string,
+  onSubmit: PropTypes.func,
+  onChange: PropTypes.func,
+  children: PropTypes.node.isRequired
+}
+```
+
++++
+
+```javascript
+describe("Search", () => {
+	it("Renders", () => {
+		const div = document.createElement('div');
+	  ReactDOM.render(<Search>Search</Search>, div);
+	});
+
+	it('Snapshot click me Search', () => {
+		const tree = renderer.create(<Search>Search</Search>).toJSON();
+		expect(tree).toMatchSnapshot();
+	});
+	it('Snapshot value Search', () => {
+		const tree = renderer.create(<Search value="keys">Find</Search>).toJSON();
+		expect(tree).toMatchSnapshot();
+	});
+});
+```
+@[1-15](commit: 70551b9)
+
++++
+
+```javascript
+	function createNodeMock(element) {
+	  if (element.type === 'input') {
+	    return {
+	      focus() {},
+	    };
+	  }
+	  return null;
+	}
+
+	it('Snapshot click me Search', () => {
+		const options = {createNodeMock};
+		const tree = renderer.create(<Search>Search</Search>, options).toJSON();
+		expect(tree).toMatchSnapshot();
+	});
+```
+@[1-8](mock context for ref elements)
+@[11-12]()
+
+---
+
+### Enzymme
+##### A trip into the DOM
+
++++
+
+```javascript
+import { shallow, mount, render } from 'enzyme';
+import { shallowToJson, mountToJson, renderToJson } from 'enzyme-to-json';
+```
+
++++
+
+```javascript
+	it('Enzyme snapshot', () =>{
+		const component = render(<Search>Search</Search>);
+		const tree = renderToJson(component);
+		expect(tree).toMatchSnapshot();
+	});
+```
+
+```
+exports[`Search Enzyme snapshot 1`] = `
+<form>
+  <input
+    type="text" />
+  <button
+    type="submit">
+    Search
+  </button>
+</form>
+`;
+```
+
++++
+
+##### GOING DEEPER
+
++++
+
+```javascript
+	it('Event onChange', () => {
+		const onChange = jest.fn();
+		const element = mount(<Search onChange={onChange}>Search</Search>);
+
+    expect(onChange).not.toBeCalled();
+		element.find('input[type="text"]').simulate('change');
+		expect(onChange).toHaveBeenCalledTimes(1);
+	});
+```
+@[6](enzyme supports selectors jquery style)
+
++++
+
+```javascript
+	it('Event onSubmit', () => {
+		const props = { 
+			onSubmit: jest.fn(),
+			onChange: jest.fn(),
+			value: "keys",
+		};
+		const element = mount(<Search {...props}>Find</Search>);
+
+    expect(props.onSubmit).not.toBeCalled();
+		element.find('form').simulate('submit');
+		expect(props.onSubmit).toHaveBeenCalledTimes(1);
+	});
+```
+@[6](enzyme supports selectors jquery style)
+
+---
+
+### TEST COVERAGE
+
