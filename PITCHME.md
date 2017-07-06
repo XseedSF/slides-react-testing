@@ -243,17 +243,12 @@ export default Button
 
 __/Button/test.js__
 ```javascript
-import React from 'react';
-import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import Button from '.';
-
 describe("Button", () => {
 	it("Renders", () => {
 		const div = document.createElement('div');
 	  ReactDOM.render(<Button>Button</Button>, div);
 	});
-
 	it('Snapshot click me button', () => {
 		const component = renderer.create(<Button>Click me</Button>);
 		const tree = component.toJSON();
@@ -265,9 +260,9 @@ describe("Button", () => {
 	});
 });
 ```
-@[7-10](Render component)
-@[12-16](Snapshot testing)
-@[12-16](Snapshot testing prop className)
+@[3-6](Render component)
+@[7-11](Snapshot testing)
+@[12-15](Snapshot testing prop className)
 
 +++
 
@@ -319,29 +314,25 @@ commit: 4fdebb2
 __/Button/test.js__
 ```javascript
 it('Event onClick called only once', ()=>{
-		const onClick = jest.fn();
-
-		const component = renderer.create(<Button onClick={onClick}>Click me</Button>);
-		const tree = component.toJSON();
-
-		expect(onClick).not.toBeCalled();
-		tree.props.onClick();
-		expect(onClick).toHaveBeenCalledTimes(1);
-	});
+	const onClick = jest.fn();
+	const component = renderer.create(<Button onClick={onClick}>Click me</Button>);
+	const tree = component.toJSON();	
+	expect(onClick).not.toBeCalled();
+	tree.props.onClick();
+	expect(onClick).toHaveBeenCalledTimes(1);
+});
 ```
 @[2](Mock function that is going to record every interaction)
-@[7](The function hasn't been called yet)
-@[8-9](Execute the function and expect it to have been called only 1 time)
+@[5](The function hasn't been called yet)
+@[6-7](Execute the function and expect it to have been called only 1 time)
 
 +++
 
 ```javascript
 it('Event onClick called only once', ()=>{
 		const onClick = jest.fn();
-
 		const component = renderer.create(<Button onClick={onClick}>Click me</Button>);
 		const tree = component.toJSON();
-
 		expect(onClick).not.toBeCalled();
 		tree.props.onClick();
 		tree.props.onClick('awesome-param');
@@ -349,7 +340,7 @@ it('Event onClick called only once', ()=>{
 		expect(onClick.mock.calls).toEqual([ [], ['awesome-param'] ]);
 	});
 ```
-@[8-11](we can get the parameters)
+@[6-9](we can get the parameters)
 
 ---
 
@@ -359,11 +350,9 @@ it('Event onClick called only once', ()=>{
 
 ```javascript
 class Search extends Component {
-
   componentDidMount() {
     this.input.focus();
   }
-
   render() {
     const { value, onChange, onSubmit, children } = this.props;
     return (
@@ -396,7 +385,6 @@ describe("Search", () => {
 		const div = document.createElement('div');
 	  ReactDOM.render(<Search>Search</Search>, div);
 	});
-
 	it('Snapshot click me Search', () => {
 		const tree = renderer.create(<Search>Search</Search>).toJSON();
 		expect(tree).toMatchSnapshot();
@@ -407,28 +395,27 @@ describe("Search", () => {
 	});
 });
 ```
-@[1-15](commit: 70551b9)
+@[1-14](commit: 70551b9)
 
 +++
 
 ```javascript
-	function createNodeMock(element) {
-	  if (element.type === 'input') {
-	    return {
-	      focus() {},
-	    };
-	  }
-	  return null;
-	}
-
-	it('Snapshot click me Search', () => {
-		const options = {createNodeMock};
-		const tree = renderer.create(<Search>Search</Search>, options).toJSON();
-		expect(tree).toMatchSnapshot();
-	});
+function createNodeMock(element) {
+  if (element.type === 'input') {
+    return {
+      focus() {},
+    };
+  }
+  return null;
+}
+it('Snapshot click me Search', () => {
+	const options = {createNodeMock};
+	const tree = renderer.create(<Search>Search</Search>, options).toJSON();
+	expect(tree).toMatchSnapshot();
+});
 ```
 @[1-8](mock context for ref elements)
-@[11-12]()
+@[10-11](create recives the createNodeMock as an option)
 
 ---
 
@@ -472,34 +459,32 @@ exports[`Search Enzyme snapshot 1`] = `
 +++
 
 ```javascript
-	it('Event onChange', () => {
-		const onChange = jest.fn();
-		const element = mount(<Search onChange={onChange}>Search</Search>);
-
-    expect(onChange).not.toBeCalled();
-		element.find('input[type="text"]').simulate('change');
-		expect(onChange).toHaveBeenCalledTimes(1);
-	});
+it('Event onChange', () => {
+	const onChange = jest.fn();
+	const element = mount(<Search onChange={onChange}>Search</Search>);
+  expect(onChange).not.toBeCalled();
+	element.find('input[type="text"]').simulate('change');
+	expect(onChange).toHaveBeenCalledTimes(1);
+});
 ```
-@[6](enzyme supports selectors jquery style)
+@[5](enzyme supports selectors jquery style)
 
 +++
 
 ```javascript
-	it('Event onSubmit', () => {
-		const props = { 
-			onSubmit: jest.fn(),
-			onChange: jest.fn(),
-			value: "keys",
-		};
-		const element = mount(<Search {...props}>Find</Search>);
-
-    expect(props.onSubmit).not.toBeCalled();
-		element.find('form').simulate('submit');
-		expect(props.onSubmit).toHaveBeenCalledTimes(1);
-	});
+it('Event onSubmit', () => {
+	const props = { 
+		onSubmit: jest.fn(),
+		onChange: jest.fn(),
+		value: "keys",
+	};
+	const element = mount(<Search {...props}>Find</Search>);
+  expect(props.onSubmit).not.toBeCalled();
+	element.find('form').simulate('submit');
+	expect(props.onSubmit).toHaveBeenCalledTimes(1);
+});
 ```
-@[6](enzyme supports selectors jquery style)
+@[9](enzyme supports selectors jquery style)
 
 ---
 
