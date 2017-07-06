@@ -25,6 +25,8 @@
 -BAD
 	- Lack of documentation
 
+---
+
 ### TEST STRUCTURE
 ```javascript
 describe('Component', () => {
