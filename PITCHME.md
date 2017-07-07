@@ -22,6 +22,7 @@
 	- Supports snapshot testing
 	- Integral solution ¯\\_(ツ)_/¯
 	- Supported by Facebook 
+
 -BAD
 	- Lack of documentation
 
@@ -344,7 +345,7 @@ it('Event onClick called only once', ()=>{
 
 ---
 
-### EVERITHING SEEMS FINE
+### EVERYTHING SEEMS FINE
 
 +++
 
